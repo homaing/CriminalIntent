@@ -1,5 +1,7 @@
 package com.example.vsio.criminalintent;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -11,14 +13,14 @@ public class CrimeLab {
     private static CrimeLab sCrimeLab;
     private ArrayList<Crime> mCrimes;
 
-    public static CrimeLab getCrimeLab() {
+    public static CrimeLab get(Context context) {
         if (sCrimeLab == null) {
-            sCrimeLab = new CrimeLab();
+            sCrimeLab = new CrimeLab(context);
         }
         return sCrimeLab;
     }
 
-    private CrimeLab() {
+    private CrimeLab(Context context) {
         mCrimes = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             Crime crime = new Crime();
