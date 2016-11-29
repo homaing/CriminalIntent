@@ -1,5 +1,6 @@
 package com.example.vsio.criminalintent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -21,6 +21,7 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
     private List<Crime> mCrimes;
     private RecyclerView mRecyclerView;
+    private CrimeAdapter adapter;
 
     @Nullable
     @Override
@@ -35,11 +36,22 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        updateUI();
+    }
+
     private void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
-        CrimeAdapter adapter = new CrimeAdapter(crimes);
-        mRecyclerView.setAdapter(adapter);
+        if (adapter == null) {
+            adapter = new CrimeAdapter(crimes);
+            mRecyclerView.setAdapter(adapter);
+        } else {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -47,6 +59,7 @@ public class CrimeListFragment extends Fragment {
         private TextView mCrimeTitle;
         private TextView mCrimeDate;
         private CheckBox mCrimeSolved;
+        private Crime mCrime;
 
         public CrimeHolder(View itemView) {
             super(itemView);
@@ -58,6 +71,7 @@ public class CrimeListFragment extends Fragment {
         }
 
         public void bindCrime(Crime crime) {
+            mCrime = crime;
             mCrimeTitle.setText(crime.getTitle());
             mCrimeDate.setText(crime.getDate().toString());
             mCrimeSolved.setChecked(crime.isSolved());
@@ -65,12 +79,14 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(getActivity(), mCrimeTitle.getText() + "Toast", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), mCrime.getTitle() + "Toast", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(getActivity(), CrimeActivity.class);
+            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
+            startActivity(intent);
         }
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
-
 
         public CrimeAdapter(List<Crime> crimes) {
             mCrimes = crimes;
